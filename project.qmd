@@ -5,7 +5,7 @@ format: pdf
 ---
 
 ## Introduction and data
-```{r intro-1, echo = F}
+```{r intro-1, echo = F, message = F}
 library(tidyverse)
 library(tidymodels)
 
@@ -19,9 +19,9 @@ airlines <- airlines |>
 airlines[, 9:22][airlines[, 9:22] == 0] <- NA
 
 ```
-Air travel is an extremely popular form of transportation in the United States with over a million people flying every day. Everyone's experience is unique, whether they are travelling for work, vacation, school, etc. My research is motivated by the many different factors of air travel that contribute to a passenger's satisfaction. Understanding the factors that contribute to passenger satisfaction is crucial for airlines to improve their services. My research aims to answer the question: What are the most important factors that drive overall passenger satisfaction, and can we use these factors to predict customer satisfaction? My data set was collected through a US passenger satisfaction survey and compiled on Kaggle. The data set was originally split into "training" and "testing" data, which were random mutually exclusive parts of the same survey. In my research, the two data sets are recombined and an additional binary variable for satisfaction was added. Fourteen factors were included in the survey, with participants rating their satisfaction for each factor from 1 to 5, with 1 being least satisfied and 5 being most satisfied. Additionally, a rating of 0 corresponded to "Not Applicable", however I have changed the satisfaction levels of 0 to NA as to not skew the analysis. Other variables include gender, customer type (loyal/disloyal), age, type of travel (business/person), class of travel, flight distance, departure delay, arrival delay, and overall satisfaction.
+Air travel is an extremely popular form of transportation in the United States with over a million people flying every day. Everyone's experience is unique, whether they are travelling for work, vacation, school, etc. My research is motivated by the many different factors of air travel that contribute to a passenger's satisfaction. Understanding the factors that contribute to passenger satisfaction is crucial for airlines to improve their services. My research aims to answer the question: What are the most important factors that drive overall passenger satisfaction, and can we use these factors to predict customer satisfaction? My data set was collected through a US passenger satisfaction survey and compiled on Kaggle. The data set was originally split into "training" and "testing" data, which were random mutually exclusive parts of the same survey. In my research, the two data sets are recombined and an additional binary variable for satisfaction was added. Fourteen factors were included in the survey, with participants rating their satisfaction for each factor from 1 to 5, with 1 being least satisfied and 5 being most satisfied. Additionally, a rating of 0 corresponded to "Not Applicable", however I have changed the satisfaction levels of 0 to NA as to not skew the analysis. These factors include many different aspects of a passengers experience during a flight, from booking services to online check-in to the food offered during the flight, etc. Other variables include gender, customer type (loyal/disloyal), age, type of travel (business/person), class of travel, flight distance, departure delay, arrival delay, and overall satisfaction.
 
-```{r intro-2, echo = F}
+```{r intro-2, echo = F, eval = F}
 airlines |>
   summarize(
     iws = mean(`Inflight wifi service`, na.rm = T),
@@ -39,28 +39,104 @@ airlines |>
     ifs = mean(`Inflight service`, na.rm = T),
     c = mean(Cleanliness, na.rm = T)
   )
+airlines |>
+  group_by(satisfaction_binary) |>
+  summarize(
+    iws = mean(`Inflight wifi service`, na.rm = T),
+    datc = mean(`Departure/Arrival time convenient`, na.rm = T),
+    eob = mean(`Ease of Online booking`, na.rm = T),
+    gl = mean(`Gate location`, na.rm = T),
+    fad = mean(`Food and drink`, na.rm = T),
+    ob = mean(`Online boarding`, na.rm = T),
+    sc = mean(`Seat comfort`, na.rm = T),
+    ife = mean(`Inflight entertainment`, na.rm = T),
+    obs = mean(`On-board service`, na.rm = T),
+    lrs = mean(`Leg room service`, na.rm = T),
+    bh = mean(`Baggage handling`, na.rm = T),
+    cis = mean(`Checkin service`, na.rm = T),
+    ifs = mean(`Inflight service`, na.rm = T),
+    c = mean(Cleanliness, na.rm = T)
+  )
+```
+The table shows the fourteen factors in the survey with the average of all responses (grouped by overall satisfaction as well as combined)
+\begin{longtable}{cccc}
+                       & Satisfied & Not Satisfied & Combined \\
+\endfirsthead
+%
+\endhead
+%
+Inflight wifi          & 3.393511  & 2.398750      & 2.813526 \\
+Departure/Arrival time & 3.14203   & 3.28529       & 3.223411 \\
+Ease of online booking & 3.244406  & 2.617090      & 2.883001 \\
+Gate location          & 2.972903  & 2.980055      & 2.976948 \\
+Food and drink         & 3.528888  & 2.961526      & 3.208034 \\
+Online boarding        & 4.153870  & 2.708061      & 3.33164  \\
+Seat comfort           & 3.966417  & 3.038039      & 3.441388 \\
+Inflight entertainment & 3.964202  & 2.893142      & 3.358542 \\
+On-board service       & 3.856171  & 3.019742      & 3.383153 \\
+Leg room               & 3.834051  & 3.006488      & 3.366377 \\
+Baggage handling       & 3.966914  & 3.374912      & 3.632114 \\
+Check-in service       & 3.649004  & 3.043008      & 3.306293 \\
+Inflight service       & 3.970990  & 3.389832      & 3.642333 \\
+Cleanliness            & 3.746509  & 2.933359      & 3.28668 
+\end{longtable}
+The average satisfaction score varies between 2.81 for in-flight WiFi service to 3.64 for in-flight service. For the most part, being overall satisfied corresponds to a higher average score for the factors (with departure/arrival time and gate location being the only two exceptions). Additionally, the factors have varying spreads between average scores of overall satisfied passengers and not satisfied passengers. For example, online boarding (checking in online) has a much higher average score when looking at overall satisfied passengers compared to not satisfied passengers while gate location has a very small difference in average scores when looking at overall satisfied compared to not satisfied.
+
+```{r intro-3, echo = F, warning = F}
+airlines <- airlines |>
+  mutate(age_cat = case_when(
+    Age < 11 ~ "10 or under",
+    Age < 21 ~ "11-20",
+    Age < 31 ~ "21-30",
+    Age < 41 ~ "31-40",
+    Age < 51 ~ "41-50",
+    Age < 61 ~ "51-60",
+    Age < 71 ~ "61-70",
+    TRUE ~ "Over 70"
+  )
+  )
+
+airlines <- airlines |>
+  mutate(age_cat = fct_relevel(age_cat, "10 or under", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "Over 70"))
 
 airlines2 <- airlines |>
   group_by(Age) |>
   count(satisfaction_binary == 1) |>
   pivot_wider(names_from = `satisfaction_binary == 1`, values_from = n) |>
   mutate(total = `TRUE` + `FALSE`,
-  prop = `TRUE` / total)
+  prop = `TRUE` / total) |>
+    mutate(age_cat = case_when(
+    Age < 11 ~ "10 or under",
+    Age < 21 ~ "11-20",
+    Age < 31 ~ "21-30",
+    Age < 41 ~ "31-40",
+    Age < 51 ~ "41-50",
+    Age < 61 ~ "51-60",
+    Age < 71 ~ "61-70",
+    TRUE ~ "Over 70"
+  )
+  )
+
+airlines2 <- airlines2 |>
+  mutate(age_cat = fct_relevel(age_cat, "10 or under", "11-20", "21-30", "31-40", "41-50", "51-60", "61-70", "Over 70"))
+```
+
+
+```{r intro-4, echo = F}
 airlines2 |>
-  group_by(Age) |>
   ggplot(
     aes(
       x = Age,
-      y = prop
+      y = prop,
+      color = age_cat
     )
     ) +
-      geom_point()
+      geom_point() +
+  labs(
+    x = "Age",
+    y = "Proportion of Customers Satisfied",
+    color = "Age Category",
+    title = "Middle age customers are generally more likely to be satisfied"
+  )
 ```
-(will put this into a nicer looking graph later) The average satisfaction score varies between 2.81 for in-flight WiFi service to 3.64 for in-flight service.
-The probability of being satisfied seems highest for middle age (40-60)people with low satisfaction levels for younger and older people.
-
-
-
-This section includes an introduction to the project motivation, data, and research question. Describe the data and definitions of key variables. It should also include some exploratory data analysis. All of the EDA won’t fit in the paper, so focus on the EDA for the response variable and a few other interesting variables and relationships.
-
-The research question and motivation are clearly stated in the introduction, including citations for the data source and any external research. The data are clearly described, including a description about how the data were originally collected and a concise definition of the variables relevant to understanding the report. The data cleaning process is clearly described, including any decisions made in the process (e.g., creating new variables, removing observations, etc.) The explanatory data analysis helps the reader better understand the observations in the data along with interesting and relevant relationships between the variables. It incorporates appropriate visualizations and summary statistics.
+The probability of being satisfied seems highest for middle age (groups aged 41-50 and 51-60) people while younger and older passengers have a smaller probability of being satisfied. There is a notable difference in the proportion of satisfied passengers between age groups with a sharp drop off once the passenger age reaches 60 years old.
