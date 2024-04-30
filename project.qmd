@@ -58,7 +58,7 @@ airlines |>
     c = mean(Cleanliness, na.rm = T)
   )
 ```
-The table shows the fourteen factors in the survey with the average of all responses (grouped by overall satisfaction as well as combined)
+The table below shows the fourteen factors in the survey with the average of all responses (grouped by overall satisfaction as well as combined):
 \begin{longtable}{cccc}
                        & Satisfied & Not Satisfied & Combined \\
 \endfirsthead
@@ -142,4 +142,10 @@ airlines2 |>
 The probability of being satisfied seems highest for middle age (groups aged 41-50 and 51-60) people while younger and older passengers have a smaller probability of being satisfied. There is a notable difference in the proportion of satisfied passengers between age groups with a sharp drop off once the passenger age reaches 60 years old.
 
 ## Methodology
+
+For my analysis, I chose to use a logistic regression model. Since overall satisfaction is a binary variable (satisfied or not satisfied), a logistic regression model provides valuable comparisons between different values of the predictor variables in terms of odds ratios for satisfaction. The model will show which variables affect the probability of being satisfied the greatest. We can then test the model on our data to determine the effectiveness of our model at predicting overall satisfaction. For predictor variables, I used all fourteen factors in the survey, as well as age (categorized), flight distance, customer type (loyal/not loyal), arrival delay, gender, type of travel, travel class, and an interaction term between type of travel and travel class. The main effects were chosen as they are all factors that could affect a passenger's satisfaction in their flying experience. The interaction term is included because I believe that the relationship between travel class and satisfaction depends on the type of travel due to business travels having a stronger preference and desire to fly business class. Departure delay is not included in the model because the departure delay does not matter as much as the arrival could still be on time, therefore I only included the arrival delay in the model since the two variables are highly co-linear and arrival delay matters much more to passengers than departure delay. 
+
+Assess conditions and diagnostics
+
+Afterwards, in order to determine the model's effectiveness, I calculated the sens/spec/etc... fill in later.
 
