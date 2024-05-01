@@ -231,3 +231,8 @@ Some of the factors that affected the odds of predicting satisfaction the most i
 My research is potentially limited by the fact that the data was collected through a survey, with a subjective rating system of the different factors and overall satisfaction. Everyone has different preferences and weigh each aspect of their experience differently when it comes to determining overall satisfaction. Additionally, the people responding to the survey chose to respond. The demographic of people that declined or ignored responding to the survey could be different than the people who did respond, which could potentially skew the results. To correct this, we could try to determine more objective methods of determining satisfaction and improve our sampling methods.
 
 In conclusion, we analyzed many different factors and their effects on overall satisfaction. These results can be used by the airline industry to determine which aspects of their product they should focus on improving. Airlines are constantly looking to differentiate their product to better compete with competitors, and my research attempts to identify which improvements will appease customers the most. Future studies can include analyzing the costs of making upgrades to their product, analysis of which customers are more profitable and determining their preferences, and research into why customers weigh some factors more than others.
+
+## Data Set
+
+The data set used in this report was collected from this link:
+https://www.kaggle.com/datasets/teejmahal20/airline-passenger-satisfaction
